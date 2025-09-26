@@ -44,6 +44,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(files("libs/api-7.2.4026.aar"))
-    implementation(files("libs/basic-7.2.1311.aar"))
+    implementation(
+        fileTree(
+            mapOf(
+                "dir" to "libs",
+                "include" to listOf(
+                    "api-8.3.2665.aar",
+                    "fcore-7.2.1311.aar"
+                )
+            )
+        )
+    )
 }

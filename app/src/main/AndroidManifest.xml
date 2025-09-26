@@ -12,4 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Regulafacesdk_v2" />
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 </manifest>
