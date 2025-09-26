@@ -44,15 +44,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(
-        fileTree(
-            mapOf(
-                "dir" to "libs",
-                "include" to listOf(
-                    "api-8.3.2665.aar",
-                    "fcore-7.2.1311.aar"
-                )
-            )
-        )
-    )
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    implementation("androidx.databinding:viewbinding:8.10.0")
 }
