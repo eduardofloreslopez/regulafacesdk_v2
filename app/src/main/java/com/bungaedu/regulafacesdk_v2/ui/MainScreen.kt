@@ -36,7 +36,7 @@ fun MainScreen(
     onCaptureClick: (Activity) -> Unit,
     onPickFromGalleryClick: () -> Unit,
     onCompareClick: () -> Unit,
-    onResetClick: () -> Unit
+    onResetClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val activity = context as ComponentActivity  // ✅ Conversión directa
@@ -113,7 +113,7 @@ fun MainScreen(
                     ) {
                         Text(
                             "Similitud: ${sim.percent}%",
-                            style = MaterialTheme.typography.headlineLarge
+                            style = MaterialTheme.typography.headlineMedium
                         )
                         LinearProgressIndicator(
                             progress = sim.percent / 100f,

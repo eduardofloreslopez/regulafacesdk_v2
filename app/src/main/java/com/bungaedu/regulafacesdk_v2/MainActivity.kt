@@ -2,6 +2,7 @@ package com.bungaedu.regulafacesdk_v2
 
 import android.os.Bundle
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
@@ -37,7 +38,6 @@ class MainActivity : ComponentActivity() {
     // Inyectamos el ViewModel pasando el MediaPicker como parámetro
     // (lo creamos en onCreate, donde además capturamos la implementación concreta)
     private val mainViewModel: MainViewModel by viewModel {
-        // Creamos MediaPicker via Koin con parámetros: (activity, launcher)
         val picker: MediaPicker = getKoin().get {
             parametersOf(this@MainActivity, galleryLauncher as androidx.activity.result.ActivityResultLauncher<Intent>)
         }
@@ -53,7 +53,6 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            // Observa el state desde Compose (usa collectAsState con lifecycle)
             val state = mainViewModel.ui.collectAsStateWithLifecycle().value
             MainScreen(
                 state = state,
@@ -68,7 +67,15 @@ class MainActivity : ComponentActivity() {
                     mainViewModel.requestGalleryImage()
                 },
                 onCompareClick = {
-                    mainViewModel.compareFaces()
+                    if (mainViewModel.checkInternet()) {
+                        mainViewModel.compareFaces()
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Necesitas internet para poder realizar la comprobación",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 },
                 onResetClick = {
                     mainViewModel.resetFlow()

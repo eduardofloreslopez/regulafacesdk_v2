@@ -7,7 +7,7 @@ import com.bungaedu.regulafacesdk_v2.data.gateway.FaceCaptureLauncher
 import com.bungaedu.regulafacesdk_v2.data.gateway.FaceMatcher
 import com.bungaedu.regulafacesdk_v2.data.gateway.FaceSdkManager
 import com.bungaedu.regulafacesdk_v2.data.gateway.MediaPicker
-import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
+import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityChecker
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,8 @@ class MainViewModel(
     private val captureLauncher: FaceCaptureLauncher,
     private val matcher: FaceMatcher,
     private val mediaPicker: MediaPicker,
-    private val faceSdkManager: FaceSdkManager
+    private val faceSdkManager: FaceSdkManager,
+    private val connectivity: ConnectivityChecker
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(MainUiState())
@@ -109,4 +110,7 @@ class MainViewModel(
     fun resetFlow() {
         _ui.value = _ui.value.copy(faceA = null, faceB = null, similarity = null, errorMessage = null)
     }
+
+    /** Check rápido y síncrono usando el contrato de dominio */
+    fun checkInternet(): Boolean = connectivity.isOnlineNow()
 }

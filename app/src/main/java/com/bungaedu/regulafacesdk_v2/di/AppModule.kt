@@ -12,31 +12,32 @@ import com.bungaedu.regulafacesdk_v2.data.gateway.impl.AndroidMediaPicker
 import com.bungaedu.regulafacesdk_v2.data.gateway.impl.FaceSdkManagerImpl
 import com.bungaedu.regulafacesdk_v2.data.gateway.impl.RegulaFaceCaptureLauncher
 import com.bungaedu.regulafacesdk_v2.data.gateway.impl.RegulaFaceMatcher
+import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityCheckerImpl
+import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityChecker
 import com.bungaedu.regulafacesdk_v2.ui.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
+    single<ConnectivityChecker> { ConnectivityCheckerImpl(get()) } // requiere Context
 
-    // Regula (REALO)
     single<FaceCaptureLauncher> { RegulaFaceCaptureLauncher() }
     single<FaceMatcher> { RegulaFaceMatcher(androidContext()) }
 
-    // MediaPicker Android con parámetros (Activity + Launcher)
     factory<MediaPicker> { (activity: Activity, launcher: ActivityResultLauncher<Intent>) ->
         AndroidMediaPicker(activity, launcher)
     }
 
     single<FaceSdkManager> { FaceSdkManagerImpl(androidContext().applicationContext as Application) }
 
-    // ViewModel no conoce implementaciones
     viewModel { (mediaPicker: MediaPicker) ->
         MainViewModel(
             captureLauncher = get(),
             matcher = get(),
             mediaPicker = mediaPicker,
-            faceSdkManager = get()
+            faceSdkManager = get(),
+            connectivity = get()
         )
     }
 }
