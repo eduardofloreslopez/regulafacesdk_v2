@@ -62,9 +62,40 @@ fun MainScreen(
                 SegmentedButtons(state.captureMode, onSelectMode)
             }
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FacePreview("Imagen A (captura)", state.faceA, Modifier.weight(1f))
-                FacePreview("Imagen B (galería)", state.faceB, Modifier.weight(1f))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Primer FacePreview y su botón, dentro de un Column
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally // Opcional: Centra los elementos horizontalmente
+                ) {
+                    FacePreview("Imagen A (captura)", state.faceA, Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(8.dp)) // Espacio entre FacePreview y Button
+                    Button(
+                        onClick = {
+                            cameraPermLauncher.launch(Manifest.permission.CAMERA)
+                            onCaptureClick
+                        },
+                        enabled = state.isSdkReady && !state.isBusy,
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Capturar") }
+                }
+
+                // Segundo FacePreview y su botón, dentro de otro Column
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally // Opcional: Centra los elementos horizontalmente
+                ) {
+                    FacePreview("Imagen B (galería)", state.faceB, Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(8.dp)) // Espacio entre FacePreview y Button
+                    OutlinedButton(
+                        onClick = onPickFromGalleryClick,
+                        enabled = !state.isBusy,
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Elegir") }
+                }
             }
 
             state.similarity?.let { sim ->
@@ -96,24 +127,6 @@ fun MainScreen(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                // Pide permiso de cámara y la Activity ejecuta onCaptureClick(activity)
-                Button(
-                    onClick = {
-                        cameraPermLauncher.launch(Manifest.permission.CAMERA)
-                        onCaptureClick
-                    },
-                    enabled = state.isSdkReady && !state.isBusy,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Capturar rostro (SDK)") }
-
-                // Galería → delega en la Activity (MediaPicker)
-                OutlinedButton(
-                    onClick = onPickFromGalleryClick,
-                    enabled = !state.isBusy,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Elegir de galería") }
-
                 Button(
                     onClick = onCompareClick,
                     enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady,
