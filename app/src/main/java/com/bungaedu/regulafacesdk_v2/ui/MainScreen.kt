@@ -1,8 +1,10 @@
 package com.bungaedu.regulafacesdk_v2.ui
 
 import android.Manifest
+import android.R.attr.enabled
 import android.app.Activity
 import android.graphics.BitmapFactory
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -12,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.bungaedu.regulafacesdk_v2.MainActivity
 import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
@@ -27,20 +31,22 @@ fun MainScreen(
     onCompareClick: () -> Unit,
     onResetClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val activity = context as ComponentActivity  // ✅ Conversión directa
     val cameraPermLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
             if (granted) {
-                // Necesitamos una Activity: obténla del CompositionLocal si la pasas, o
-                // muévelo a la Activity. Para simplificar, pedimos el permiso y
-                // la Activity llama a onCaptureClick()
+                onCaptureClick(activity)
             }
         }
     )
 
     Scaffold(topBar = { TopAppBar(title = { Text("Regula Face Demo") }) }) { p ->
         Column(
-            Modifier.padding(p).padding(16.dp),
+            Modifier
+                .padding(p)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
@@ -67,14 +73,12 @@ fun MainScreen(
                         Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Similitud", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "${sim.percent}%",
-                            style = MaterialTheme.typography.headlineLarge
-                        )
+                        Text("Similitud: ${sim.percent}%", style = MaterialTheme.typography.headlineLarge)
                         LinearProgressIndicator(
                             progress = sim.percent / 100f,
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
                         )
                     }
                 }
@@ -95,7 +99,10 @@ fun MainScreen(
 
                 // Pide permiso de cámara y la Activity ejecuta onCaptureClick(activity)
                 Button(
-                    onClick = { cameraPermLauncher.launch(Manifest.permission.CAMERA) },
+                    onClick = {
+                        cameraPermLauncher.launch(Manifest.permission.CAMERA)
+                        onCaptureClick
+                    },
                     enabled = state.isSdkReady && !state.isBusy,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Capturar rostro (SDK)") }
@@ -136,17 +143,23 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
                     Image(
                         bitmap = bmp.asImageBitmap(),
                         contentDescription = title,
-                        modifier = Modifier.fillMaxWidth().height(200.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
                     )
                 } else {
                     Box(
-                        Modifier.fillMaxWidth().height(200.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
                         contentAlignment = Alignment.Center
                     ) { Text("Imagen inválida") }
                 }
             } else {
                 Box(
-                    Modifier.fillMaxWidth().height(200.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
                     contentAlignment = Alignment.Center
                 ) { Text("Sin imagen") }
             }
@@ -164,6 +177,8 @@ private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> U
         FilterChip(
             selected = mode == CaptureMode.ACTIVE,
             onClick = { onModeChange(CaptureMode.ACTIVE) },
-            label = { Text("Activo") })
+            label = { Text("Activo") },
+            enabled = false
+        )
     }
 }

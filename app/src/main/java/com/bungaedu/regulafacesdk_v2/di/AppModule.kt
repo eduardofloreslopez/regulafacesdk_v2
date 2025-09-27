@@ -21,7 +21,7 @@ val appModule = module {
 
     // Regula (REALO)
     single<FaceCaptureLauncher> { RegulaFaceCaptureLauncher() }
-    single<FaceMatcher> { RegulaFaceMatcher() }
+    single<FaceMatcher> { RegulaFaceMatcher(androidContext()) }
 
     // MediaPicker Android con parámetros (Activity + Launcher)
     factory<MediaPicker> { (activity: Activity, launcher: ActivityResultLauncher<Intent>) ->
