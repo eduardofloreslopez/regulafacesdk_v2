@@ -14,9 +14,7 @@ import com.regula.facesdk.model.results.LivenessResponse
 import java.io.ByteArrayOutputStream
 
 /**
- * Implementación REAL de captura con Regula Face SDK.
- * - PASIVO: Selfie sin reto (FaceCaptureActivity)
- * - ACTIVO: Liveness con reto (UI del SDK)
+ * Implementación de captura con Regula Face SDK.
  */
 class RegulaFaceCaptureLauncher : FaceCaptureLauncher {
 

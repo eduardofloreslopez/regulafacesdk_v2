@@ -8,8 +8,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class App : Application() {
-
-    // obtén el manager vía Koin
     private val faceSdkManager: FaceSdkManager by inject()
 
     override fun onCreate() {
@@ -20,12 +18,12 @@ class App : Application() {
             modules(appModule)
         }
 
-        // ahora sí, inicializa el SDK a través del manager
         faceSdkManager.initialize()
     }
 
     override fun onTerminate() {
         super.onTerminate()
+
         faceSdkManager.deinitialize()
     }
 }

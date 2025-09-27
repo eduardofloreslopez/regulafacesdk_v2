@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import com.bungaedu.regulafacesdk_v2.data.gateway.MediaPicker
 import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import kotlinx.coroutines.CompletableDeferred
@@ -17,7 +16,7 @@ import kotlinx.coroutines.withContext
  * USO:
  *  - En la Activity registra un launcher de ActivityResultContracts.StartActivityForResult()
  *  - Inyecta activity + launcher vía Koin parametersOf(activity, launcher)
- *  - Reenvía el callback al método onActivityResult(...)
+ *  - Reenvía el callback al méto.do onActivityResult(...)
  */
 class AndroidMediaPicker(
     private val activity: Activity,

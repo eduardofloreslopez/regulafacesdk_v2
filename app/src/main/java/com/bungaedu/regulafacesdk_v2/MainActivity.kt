@@ -1,7 +1,6 @@
 package com.bungaedu.regulafacesdk_v2
 
 import android.os.Bundle
-import android.content.Intent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,13 +18,32 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
+/**
+ * Actividad principal de la aplicación.
+ *
+ * Se encarga de:
+ * - Configurar el entorno de Compose como contenido principal.
+ * - Integrar el flujo de selección de imágenes desde galería mediante
+ *   [ActivityResultContracts.StartActivityForResult].
+ * - Inyectar [MainViewModel] con Koin, pasando dinámicamente la implementación
+ *   concreta de [MediaPicker].
+ * - Definir las callbacks de UI que conectan la capa visual ([MainScreen]) con
+ *   la lógica del ViewModel.
+ *
+ * Flujo general:
+ * - El usuario puede elegir modo de captura (pasivo/activo).
+ * - Capturar una foto con el SDK.
+ * - Seleccionar una imagen desde galería.
+ * - Comparar ambas imágenes (previa verificación de internet).
+ * - Reiniciar el flujo cuando lo desee.
+ */
 class MainActivity : ComponentActivity() {
-
-    // Mantendremos la referencia concreta para reenviar el resultado del launcher
     private lateinit var androidMediaPicker: AndroidMediaPicker
 
-    // Registrar el launcher CLÁSICO de Activity Result (fuera de Compose)
-    // 1) En el launcher, envolver la llamada suspend
+    /**
+     * Launcher clásico de Activity Result para la selección de imágenes.
+     * Se integra fuera de Compose para manejar el resultado en [AndroidMediaPicker].
+     */
     private val galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (::androidMediaPicker.isInitialized) {
@@ -35,16 +53,16 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    // Inyectamos el ViewModel pasando el MediaPicker como parámetro
-    // (lo creamos en onCreate, donde además capturamos la implementación concreta)
+    /**
+     * Inyección del [MainViewModel] con Koin, recibiendo como parámetro
+     * una implementación concreta de [MediaPicker].
+     */
     private val mainViewModel: MainViewModel by viewModel {
         val picker: MediaPicker = getKoin().get {
-            parametersOf(this@MainActivity, galleryLauncher as androidx.activity.result.ActivityResultLauncher<Intent>)
+            parametersOf(this@MainActivity, galleryLauncher)
         }
-        // Guardamos la implementación concreta para recibir el callback del launcher
         androidMediaPicker = picker as AndroidMediaPicker
 
-        // Le pasamos el MediaPicker al VM
         parametersOf(picker)
     }
 

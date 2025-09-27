@@ -3,11 +3,18 @@ package com.bungaedu.regulafacesdk_v2.domain.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import kotlinx.coroutines.flow.MutableStateFlow
 
+/**
+ * Implementación de [ConnectivityChecker] que utiliza las APIs nativas de Android
+ * para comprobar el estado de conectividad a Internet.
+ *
+ * Se basa en [ConnectivityManager] y [NetworkCapabilities] para determinar si
+ * la red activa dispone de acceso a Internet.
+ *
+ * @property context Contexto de la aplicación necesario para acceder a los
+ * servicios de conectividad de Android.
+ */
 class ConnectivityCheckerImpl(private val context: Context) : ConnectivityChecker {
-    private val _isOnline = MutableStateFlow(checkNow())
-
     override fun isOnlineNow(): Boolean = checkNow()
 
     private fun checkNow(): Boolean {
@@ -15,9 +22,5 @@ class ConnectivityCheckerImpl(private val context: Context) : ConnectivityChecke
         val net = cm.activeNetwork ?: return false
         val caps = cm.getNetworkCapabilities(net) ?: return false
         return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-
-    fun refresh() {
-        _isOnline.value = checkNow()
     }
 }

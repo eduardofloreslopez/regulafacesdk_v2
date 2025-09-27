@@ -5,8 +5,7 @@ import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 
 /**
- * Encapsula el lanzamiento de la UI de Regula y devuelve la imagen capturada.
- * Implementa aquí las llamadas reales del SDK (actividad/fragment/configuración pasivo/activo).
+ * Abstracción para lanzar un proceso de captura facial mediante el SDK.
  */
 interface FaceCaptureLauncher {
     fun start(

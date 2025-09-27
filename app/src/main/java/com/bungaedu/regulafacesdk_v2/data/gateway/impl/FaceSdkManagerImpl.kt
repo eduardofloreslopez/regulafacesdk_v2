@@ -8,6 +8,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * Implementación de [FaceSdkManager] que encapsula la inicialización
+ * y liberación de recursos del SDK de Regula Face.
+ *
+ * Esta clase se encarga de:
+ * - Inicializar el SDK con el contexto de aplicación.
+ * - Exponer el estado de disponibilidad del SDK mediante un [StateFlow].
+ * - Liberar los recursos cuando ya no se necesiten.
+ *
+ * @property app [Application] utilizado para inicializar el SDK.
+ */
 class FaceSdkManagerImpl(
     private val app: Application
 ) : FaceSdkManager {

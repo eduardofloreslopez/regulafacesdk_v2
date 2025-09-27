@@ -28,6 +28,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.text.font.FontWeight
 
+/**
+ * Pantalla principal que orquesta la interacción de usuario:
+ * - Selección de modo de captura (pasivo/activo).
+ * - Captura de imagen facial con el SDK.
+ * - Selección de imagen desde galería.
+ * - Comparación de similitud y visualización del resultado.
+ *
+ * Renderiza en base a [MainUiState] y delega acciones al ViewModel mediante callbacks.
+ *
+ * @param state Estado inmutable de la UI.
+ * @param onSelectMode Cambia el modo de captura (pasivo/activo).
+ * @param onCaptureClick Lanza el flujo de captura del SDK (requiere [Activity]).
+ * @param onPickFromGalleryClick Abre la galería para seleccionar imagen.
+ * @param onCompareClick Ejecuta la comparación de rostros.
+ * @param onResetClick Reinicia el flujo (borra imágenes y resultado).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -77,10 +93,10 @@ fun MainScreen(
                 // Primer FacePreview y su botón, dentro de un Column
                 Column(
                     modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally // Opcional: Centra los elementos horizontalmente
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     FacePreview("Imagen A (captura)", state.faceA, Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp)) // Espacio entre FacePreview y Button
+                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
                             cameraPermLauncher.launch(Manifest.permission.CAMERA)
@@ -93,10 +109,10 @@ fun MainScreen(
 
                 Column(
                     modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally // Opcional: Centra los elementos horizontalmente
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     FacePreview("Imagen B (galería)", state.faceB, Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp)) // Espacio entre FacePreview y Button
+                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = onPickFromGalleryClick,
                         enabled = !state.isBusy && state.faceA != null && state.faceB == null,
@@ -153,6 +169,15 @@ fun MainScreen(
     }
 }
 
+/**
+ * Muestra una tarjeta con preview de una imagen facial (o marcador "Sin imagen").
+ *
+ * Utiliza Coil para renderizar con eficiencia posibles imágenes grandes.
+ *
+ * @param title Título de la tarjeta (ej. "Imagen A (captura)").
+ * @param image Imagen facial a mostrar; si es null o vacía, se muestra marcador.
+ * @param modifier Modificador Compose para tamaño/estilo.
+ */
 @Composable
 private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = Modifier) {
     Card(modifier) {
@@ -163,19 +188,15 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
             val bytes = image?.bytes
 
             if (bytes != null && bytes.isNotEmpty()) {
-                // Coil se encarga de la decodificación, reescalado y caching de forma eficiente.
                 AsyncImage(
-                    // Configuramos la solicitud de imagen
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(bytes) // Coil acepta el array de bytes (byte[]) directamente
+                        .data(bytes)
                         .crossfade(true)
                         .build(),
                     contentDescription = title,
-                    // Modificadores para el diseño
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    // Asegura que la imagen se ajuste y llene el espacio
                     contentScale = ContentScale.Crop
                 )
             } else {
@@ -190,6 +211,14 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
     }
 }
 
+/**
+ * Grupo de botones segmentados para seleccionar el [CaptureMode].
+ *
+ * Modo ACTIVO queda deshabilitado por ahora, dejando constancia de futura extensión.
+ *
+ * @param mode Modo actual seleccionado.
+ * @param onModeChange Callback al pulsar un modo distinto.
+ */
 @Composable
 private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -206,6 +235,9 @@ private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> U
     }
 }
 
+/**
+ * Barra superior centrada para la demo.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopBar() {
