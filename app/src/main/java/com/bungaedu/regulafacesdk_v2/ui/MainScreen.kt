@@ -1,30 +1,32 @@
 package com.bungaedu.regulafacesdk_v2.ui
 
 import android.Manifest
-import android.R.attr.enabled
 import android.app.Activity
-import android.graphics.BitmapFactory
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.bungaedu.regulafacesdk_v2.MainActivity
 import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +49,7 @@ fun MainScreen(
         }
     )
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Regula Face Demo") }) }) { p ->
+    Scaffold(topBar = { MainTopBar() }) { p ->
         Column(
             Modifier
                 .padding(p)
@@ -55,7 +57,8 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()) {
                 val chipColor =
                     if (state.isSdkReady) Color.Green else MaterialTheme.colorScheme.error
                 AssistChip(
@@ -202,3 +205,28 @@ private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> U
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainTopBar() {
+    CenterAlignedTopAppBar(
+        title = {
+            Column {
+                Text(
+                    text = "Regula Face Demo",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    )
+}
+
