@@ -40,7 +40,10 @@ class RegulaFaceMatcher(private val context: Context) : FaceMatcher {
     override suspend fun compare(a: FaceImage, b: FaceImage): Similarity = suspendCoroutine { continuation ->
         try {
             val referenceBitmap = a.bytes.toBitmap()
+            Log.d(TAG, "Referencia: ${a.bytes.size} bytes -> bitmap=${referenceBitmap != null}")
+
             val candidateBitmap = b.bytes.toBitmap()
+            Log.d(TAG, "Candidato: ${b.bytes.size} bytes -> bitmap=${candidateBitmap != null}")
 
             // Validación de bitmaps nulos
             if (referenceBitmap == null) {
@@ -57,6 +60,7 @@ class RegulaFaceMatcher(private val context: Context) : FaceMatcher {
 
             val referenceImage = MatchFacesImage(referenceBitmap, ImageType.LIVE)
             val candidateImage = MatchFacesImage(candidateBitmap, ImageType.PRINTED)
+            Log.d(TAG, "Creando request con ${listOf(referenceImage, candidateImage).size} imágenes")
 
             val allImagesForComparison = listOf(referenceImage, candidateImage)
             val request = MatchFacesRequest(allImagesForComparison)
@@ -65,6 +69,8 @@ class RegulaFaceMatcher(private val context: Context) : FaceMatcher {
             FaceSDK.Instance().matchFaces(context, request, object : MatchFaceCallback {
 
                 override fun onFaceMatched(response: MatchFacesResponse?) {
+                    Log.d(TAG, "Respuesta recibida: ${response?.results?.size ?: 0} pares")
+                    Log.d(TAG, "Raw response: ${response?.toString()}")
                     try {
                         if (response == null) {
                             Log.e(TAG, "Response es nulo")

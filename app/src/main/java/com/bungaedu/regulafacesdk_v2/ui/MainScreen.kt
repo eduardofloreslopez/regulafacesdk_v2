@@ -14,12 +14,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.bungaedu.regulafacesdk_v2.MainActivity
 import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,25 +153,25 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
         Column(Modifier.padding(12.dp)) {
             Text(title, style = MaterialTheme.typography.labelLarge)
             Spacer(Modifier.height(8.dp))
+
             val bytes = image?.bytes
+
             if (bytes != null && bytes.isNotEmpty()) {
-                val bmp = remember(bytes) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
-                if (bmp != null) {
-                    Image(
-                        bitmap = bmp.asImageBitmap(),
-                        contentDescription = title,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-                } else {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) { Text("Imagen inválida") }
-                }
+                // Coil se encarga de la decodificación, reescalado y caching de forma eficiente.
+                AsyncImage(
+                    // Configuramos la solicitud de imagen
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(bytes) // Coil acepta el array de bytes (byte[]) directamente
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = title,
+                    // Modificadores para el diseño
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    // Asegura que la imagen se ajuste y llene el espacio
+                    contentScale = ContentScale.Crop
+                )
             } else {
                 Box(
                     Modifier
