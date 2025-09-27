@@ -1,30 +1,31 @@
 package com.bungaedu.regulafacesdk_v2
 
 import android.app.Application
-import android.util.Log
+import com.bungaedu.regulafacesdk_v2.data.gateway.FaceSdkManager
 import com.bungaedu.regulafacesdk_v2.di.appModule
-
-import com.regula.facesdk.FaceSDK
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class App : Application() {
+
+    // obtén el manager vía Koin
+    private val faceSdkManager: FaceSdkManager by inject()
+
     override fun onCreate() {
         super.onCreate()
+
         startKoin {
             androidContext(this@App)
-            modules(
-                appModule
-            )
+            modules(appModule)
         }
-        FaceSDK.Instance().initialize(this) { success, error ->
-            Log.i("FaceSDK", "init=$success, error=${error?.message}")
-        }
+
+        // ahora sí, inicializa el SDK a través del manager
+        faceSdkManager.initialize()
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        FaceSDK.Instance().deinitialize()
-        Log.i("FaceSDK", "deinitialized")
+        faceSdkManager.deinitialize()
     }
 }

@@ -5,22 +5,34 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bungaedu.regulafacesdk_v2.data.gateway.FaceCaptureLauncher
 import com.bungaedu.regulafacesdk_v2.data.gateway.FaceMatcher
+import com.bungaedu.regulafacesdk_v2.data.gateway.FaceSdkManager
 import com.bungaedu.regulafacesdk_v2.data.gateway.MediaPicker
 import com.bungaedu.regulafacesdk_v2.data.model.FaceImage
 import com.bungaedu.regulafacesdk_v2.ui.model.CaptureMode
 import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val captureLauncher: FaceCaptureLauncher,
     private val matcher: FaceMatcher,
-    private val mediaPicker: MediaPicker
+    private val mediaPicker: MediaPicker,
+    private val faceSdkManager: FaceSdkManager
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(MainUiState())
     val ui: StateFlow<MainUiState> = _ui
+
+    init {
+        // Observa el readiness del SDK y propágalo al estado de UI
+        viewModelScope.launch {
+            faceSdkManager.isReady.collect { ready ->
+                _ui.update { it.copy(isSdkReady = ready) }
+            }
+        }
+    }
 
     fun setCaptureMode(mode: CaptureMode) {
         _ui.value = _ui.value.copy(captureMode = mode)

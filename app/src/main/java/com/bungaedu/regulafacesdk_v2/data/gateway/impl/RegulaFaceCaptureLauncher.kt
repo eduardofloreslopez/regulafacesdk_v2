@@ -26,8 +26,8 @@ class RegulaFaceCaptureLauncher : FaceCaptureLauncher {
         onResult: (Result<FaceImage>) -> Unit
     ) {
         when (mode) {
-            CaptureMode. -> startPassiveCapture(activity, onResult)
-            CaptureMode.Active -> startActiveLiveness(activity, onResult)
+            CaptureMode.PASSIVE -> startPassiveCapture(activity, onResult)
+            CaptureMode.ACTIVE -> startActiveLiveness(activity, onResult)
         }
     }
 
