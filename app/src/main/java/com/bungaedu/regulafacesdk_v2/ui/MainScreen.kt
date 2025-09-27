@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,7 +57,7 @@ fun MainScreen(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val chipColor =
-                    if (state.isSdkReady) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    if (state.isSdkReady) Color.Green else MaterialTheme.colorScheme.error
                 AssistChip(
                     onClick = { },
                     label = { Text(if (state.isSdkReady) "SDK: Listo" else "SDK: No listo") },
@@ -82,21 +83,20 @@ fun MainScreen(
                             cameraPermLauncher.launch(Manifest.permission.CAMERA)
                             onCaptureClick
                         },
-                        enabled = state.isSdkReady && !state.isBusy,
+                        enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Capturar") }
                 }
 
-                // Segundo FacePreview y su botón, dentro de otro Column
                 Column(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally // Opcional: Centra los elementos horizontalmente
                 ) {
                     FacePreview("Imagen B (galería)", state.faceB, Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(8.dp)) // Espacio entre FacePreview y Button
-                    OutlinedButton(
+                    Button(
                         onClick = onPickFromGalleryClick,
-                        enabled = !state.isBusy,
+                        enabled = !state.isBusy && state.faceA != null && state.faceB == null,
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Elegir") }
                 }
@@ -108,7 +108,10 @@ fun MainScreen(
                         Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Similitud: ${sim.percent}%", style = MaterialTheme.typography.headlineLarge)
+                        Text(
+                            "Similitud: ${sim.percent}%",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
                         LinearProgressIndicator(
                             progress = sim.percent / 100f,
                             modifier = Modifier
@@ -133,13 +136,13 @@ fun MainScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onCompareClick,
-                    enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady,
+                    enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady && state.similarity == null,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Comparar") }
 
                 OutlinedButton(
                     onClick = onResetClick,
-                    enabled = (state.faceA != null || state.faceB != null || state.similarity != null),
+                    enabled = (state.faceA != null || state.faceB != null || state.similarity != null) && !state.isBusy,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Reiniciar flujo") }
             }
