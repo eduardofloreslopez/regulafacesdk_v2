@@ -14,7 +14,7 @@ import com.bungaedu.regulafacesdk_v2.data.gateway.impl.RegulaFaceCaptureLauncher
 import com.bungaedu.regulafacesdk_v2.data.gateway.impl.RegulaFaceMatcher
 import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityCheckerImpl
 import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityChecker
-import com.bungaedu.regulafacesdk_v2.ui.MainViewModel
+import com.bungaedu.regulafacesdk_v2.ui.RecognizeViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -32,7 +32,7 @@ val appModule = module {
     single<FaceSdkManager> { FaceSdkManagerImpl(androidContext().applicationContext as Application) }
 
     viewModel { (mediaPicker: MediaPicker) ->
-        MainViewModel(
+        RecognizeViewModel(
             captureLauncher = get(),
             matcher = get(),
             mediaPicker = mediaPicker,

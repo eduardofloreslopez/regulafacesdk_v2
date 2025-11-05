@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
  * @param faceSdkManager Gestor del ciclo de vida del SDK (init/deinit + estado).
  * @param connectivity Comprobación de conectividad de red.
  */
-class MainViewModel(
+class RecognizeViewModel(
     private val captureLauncher: FaceCaptureLauncher,
     private val matcher: FaceMatcher,
     private val mediaPicker: MediaPicker,

@@ -1,4 +1,4 @@
-package com.bungaedu.regulafacesdk_v2.ui
+package com.bungaedu.regulafacesdk_v2.ui.screens
 
 import android.Manifest
 import android.app.Activity
@@ -46,7 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
+fun RecognizeScreen(
     state: MainUiState,
     onSelectMode: (CaptureMode) -> Unit,
     onCaptureClick: (Activity) -> Unit,
@@ -65,10 +65,9 @@ fun MainScreen(
         }
     )
 
-    Scaffold(topBar = { MainTopBar() }) { p ->
         Column(
             Modifier
-                .padding(p)
+                .padding()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -83,7 +82,7 @@ fun MainScreen(
                     colors = AssistChipDefaults.assistChipColors(containerColor = chipColor)
                 )
                 Spacer(Modifier.width(12.dp))
-                SegmentedButtons(state.captureMode, onSelectMode)
+                CaptureModeChips(state.captureMode, onSelectMode)
             }
 
             Row(
@@ -102,7 +101,8 @@ fun MainScreen(
                             cameraPermLauncher.launch(Manifest.permission.CAMERA)
                             onCaptureClick
                         },
-                        enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
+                        //TODO condicional - descomentar
+                        //enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Capturar") }
                 }
@@ -115,7 +115,8 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = onPickFromGalleryClick,
-                        enabled = !state.isBusy && state.faceA != null && state.faceB == null,
+                        //TODO condicional - descomentar
+                        //enabled = !state.isBusy && state.faceA != null && state.faceB == null,
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Elegir") }
                 }
@@ -155,18 +156,19 @@ fun MainScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onCompareClick,
-                    enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady && state.similarity == null,
+                    //TODO condicional - descomentar
+                    //enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady && state.similarity == null,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Comparar") }
 
                 OutlinedButton(
                     onClick = onResetClick,
-                    enabled = (state.faceA != null || state.faceB != null || state.similarity != null) && !state.isBusy,
+                    //TODO condicional - descomentar
+                    //enabled = (state.faceA != null || state.faceB != null || state.similarity != null) && !state.isBusy,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Reiniciar flujo") }
             }
         }
-    }
 }
 
 /**
@@ -220,7 +222,7 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
  * @param onModeChange Callback al pulsar un modo distinto.
  */
 @Composable
-private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> Unit) {
+private fun CaptureModeChips(mode: CaptureMode, onModeChange: (CaptureMode) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         FilterChip(
             selected = mode == CaptureMode.PASSIVE,
@@ -230,35 +232,7 @@ private fun SegmentedButtons(mode: CaptureMode, onModeChange: (CaptureMode) -> U
             selected = mode == CaptureMode.ACTIVE,
             onClick = { onModeChange(CaptureMode.ACTIVE) },
             label = { Text("Activo") },
-            enabled = false
+            //enabled = false
         )
     }
 }
-
-/**
- * Barra superior centrada para la demo.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainTopBar() {
-    CenterAlignedTopAppBar(
-        title = {
-            Column {
-                Text(
-                    text = "Regula Face Demo",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
-        )
-    )
-}
-
