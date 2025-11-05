@@ -20,6 +20,8 @@ import com.bungaedu.regulafacesdk_v2.ui.model.MainUiState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -67,129 +69,130 @@ fun RecognizeScreen(
         }
     )
 
-        Column(
-            Modifier
-                .padding()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        Modifier
+            .padding()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
+            val context = LocalContext.current
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val context = LocalContext.current
-
-                // 🔹 Cargar SDK desde SharedPreferences
-                val prefs = remember {
-                    context.getSharedPreferences("sdk_prefs", Context.MODE_PRIVATE)
-                }
-                val sdkName = prefs.getString("selected_sdk", "REGULA_SDK") ?: "REGULA_SDK"
-
-                val chipColor =
-                    if (state.isSdkReady) Color.Green else MaterialTheme.colorScheme.error
-
-                AssistChip(
-                    onClick = { },
-                    label = {
-                        val text = when (sdkName) {
-                            "IDENTY_SDK" -> "SDK: Identy"
-                            "REGULA_SDK" -> "SDK: Regula"
-                            else -> "SDK: Desconocido"
-                        }
-                        Text(
-                            if (state.isSdkReady) "$text (Listo)" else "$text (No listo)"
-                        )
-                    },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = chipColor)
-                )
+            // 🔹 Cargar SDK desde SharedPreferences
+            val prefs = remember {
+                context.getSharedPreferences("sdk_prefs", Context.MODE_PRIVATE)
             }
+            val sdkName = prefs.getString("selected_sdk", "REGULA_SDK") ?: "REGULA_SDK"
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Primer FacePreview y su botón, dentro de un Column
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    FacePreview("Imagen A (captura)", state.faceA, Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            //TODO los permisos los tienes puesto arriba
-                            //cameraPermLauncher.launch(Manifest.permission.CAMERA)
-                            onCaptureClick(activity)
-                        },
-                        //TODO condicional - descomentar
-                        //enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Capturar") }
-                }
+            val chipColor =
+                if (state.isSdkReady) Color.Green else MaterialTheme.colorScheme.error
 
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    FacePreview("Imagen B (galería)", state.faceB, Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = onPickFromGalleryClick,
-                        //TODO condicional - descomentar
-                        //enabled = !state.isBusy && state.faceA != null && state.faceB == null,
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Elegir") }
-                }
-            }
-
-            state.similarity?.let { sim ->
-                Card {
-                    Column(
-                        Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            "Similitud: ${sim.percent}%",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        LinearProgressIndicator(
-                            progress = sim.percent / 100f,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                        )
+            AssistChip(
+                onClick = { },
+                label = {
+                    val text = when (sdkName) {
+                        "IDENTY_SDK" -> "SDK: Identy"
+                        "REGULA_SDK" -> "SDK: Regula"
+                        else -> "SDK: Desconocido"
                     }
-                }
-            }
-
-            if (state.isBusy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            state.errorMessage?.let { err ->
-                AssistChip(
-                    onClick = { },
-                    label = { Text("Error: $err") },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    Text(
+                        if (state.isSdkReady) "$text (Listo)" else "$text (No listo)"
                     )
-                )
+                },
+                colors = AssistChipDefaults.assistChipColors(containerColor = chipColor)
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Primer FacePreview y su botón, dentro de un Column
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                FacePreview("Imagen A (captura)", state.faceA, Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        //TODO los permisos los tienes puesto arriba
+                        //cameraPermLauncher.launch(Manifest.permission.CAMERA)
+                        onCaptureClick(activity)
+                    },
+                    //TODO condicional - descomentar
+                    //enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Capturar") }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                FacePreview("Imagen B (galería)", state.faceB, Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = onCompareClick,
+                    onClick = onPickFromGalleryClick,
                     //TODO condicional - descomentar
-                    //enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady && state.similarity == null,
+                    //enabled = !state.isBusy && state.faceA != null && state.faceB == null,
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("Comparar") }
-
-                OutlinedButton(
-                    onClick = onResetClick,
-                    //TODO condicional - descomentar
-                    //enabled = (state.faceA != null || state.faceB != null || state.similarity != null) && !state.isBusy,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Reiniciar flujo") }
+                ) { Text("Elegir") }
             }
         }
+
+        state.similarity?.let { sim ->
+            Card {
+                Column(
+                    Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Similitud: ${sim.percent}%",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    LinearProgressIndicator(
+                        progress = sim.percent / 100f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
+            }
+        }
+
+        if (state.isBusy) LinearProgressIndicator(Modifier.fillMaxWidth())
+        state.errorMessage?.let { err ->
+            AssistChip(
+                onClick = { },
+                label = { Text("Error: $err") },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = onCompareClick,
+                //TODO condicional - descomentar
+                //enabled = state.faceA != null && state.faceB != null && !state.isBusy && state.isSdkReady && state.similarity == null,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Comparar") }
+
+            OutlinedButton(
+                onClick = onResetClick,
+                //TODO condicional - descomentar
+                //enabled = (state.faceA != null || state.faceB != null || state.similarity != null) && !state.isBusy,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Reiniciar flujo") }
+        }
+    }
 }
 
 /**
