@@ -2,6 +2,7 @@ package com.bungaedu.regulafacesdk_v2.ui.screens
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontWeight
 
 /**
@@ -60,7 +62,7 @@ fun RecognizeScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
             if (granted) {
-                onCaptureClick(activity)
+                //onCaptureClick(activity)
             }
         }
     )
@@ -72,17 +74,35 @@ fun RecognizeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val context = LocalContext.current
+
+                // 🔹 Cargar SDK desde SharedPreferences
+                val prefs = remember {
+                    context.getSharedPreferences("sdk_prefs", Context.MODE_PRIVATE)
+                }
+                val sdkName = prefs.getString("selected_sdk", "REGULA_SDK") ?: "REGULA_SDK"
+
                 val chipColor =
                     if (state.isSdkReady) Color.Green else MaterialTheme.colorScheme.error
+
                 AssistChip(
                     onClick = { },
-                    label = { Text(if (state.isSdkReady) "SDK: Listo" else "SDK: No listo") },
+                    label = {
+                        val text = when (sdkName) {
+                            "IDENTY_SDK" -> "SDK: Identy"
+                            "REGULA_SDK" -> "SDK: Regula"
+                            else -> "SDK: Desconocido"
+                        }
+                        Text(
+                            if (state.isSdkReady) "$text (Listo)" else "$text (No listo)"
+                        )
+                    },
                     colors = AssistChipDefaults.assistChipColors(containerColor = chipColor)
                 )
-                Spacer(Modifier.width(12.dp))
-                CaptureModeChips(state.captureMode, onSelectMode)
             }
 
             Row(
@@ -98,8 +118,9 @@ fun RecognizeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
-                            cameraPermLauncher.launch(Manifest.permission.CAMERA)
-                            onCaptureClick
+                            //TODO los permisos los tienes puesto arriba
+                            //cameraPermLauncher.launch(Manifest.permission.CAMERA)
+                            onCaptureClick(activity)
                         },
                         //TODO condicional - descomentar
                         //enabled = state.isSdkReady && !state.isBusy && state.faceA == null,
@@ -210,29 +231,5 @@ private fun FacePreview(title: String, image: FaceImage?, modifier: Modifier = M
                 ) { Text("Sin imagen") }
             }
         }
-    }
-}
-
-/**
- * Grupo de botones segmentados para seleccionar el [CaptureMode].
- *
- * Modo ACTIVO queda deshabilitado por ahora, dejando constancia de futura extensión.
- *
- * @param mode Modo actual seleccionado.
- * @param onModeChange Callback al pulsar un modo distinto.
- */
-@Composable
-private fun CaptureModeChips(mode: CaptureMode, onModeChange: (CaptureMode) -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        FilterChip(
-            selected = mode == CaptureMode.PASSIVE,
-            onClick = { onModeChange(CaptureMode.PASSIVE) },
-            label = { Text("Pasivo") })
-        FilterChip(
-            selected = mode == CaptureMode.ACTIVE,
-            onClick = { onModeChange(CaptureMode.ACTIVE) },
-            label = { Text("Activo") },
-            //enabled = false
-        )
     }
 }

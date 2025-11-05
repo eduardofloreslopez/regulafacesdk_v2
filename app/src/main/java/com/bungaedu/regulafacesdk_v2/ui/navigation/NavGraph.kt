@@ -1,6 +1,7 @@
 package com.bungaedu.regulafacesdk_v2.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,7 +19,7 @@ fun NavGraph(
         startDestination = NavRoute.Recognize.route
     ) {
         composable(NavRoute.Recognize.route) {
-            val state = recognizeViewModel.ui.value
+            val state = recognizeViewModel.ui.collectAsStateWithLifecycle().value
             RecognizeScreen(
                 state = state,
                 onSelectMode = { mode -> recognizeViewModel.setCaptureMode(mode) },
