@@ -1,4 +1,4 @@
-package com.bungaedu.regulafacesdk_v2.data.gateway.impl
+package com.bungaedu.regulafacesdk_v2.data.gateway.impl.common
 
 import android.app.Activity
 import android.content.Intent

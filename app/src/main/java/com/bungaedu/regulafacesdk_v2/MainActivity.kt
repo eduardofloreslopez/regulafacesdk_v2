@@ -7,7 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.bungaedu.regulafacesdk_v2.data.gateway.MediaPicker
-import com.bungaedu.regulafacesdk_v2.data.gateway.impl.AndroidMediaPicker
+import com.bungaedu.regulafacesdk_v2.data.gateway.impl.common.AndroidMediaPicker
 import com.bungaedu.regulafacesdk_v2.ui.screens.MainScreen
 import com.bungaedu.regulafacesdk_v2.ui.RecognizeViewModel
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.bungaedu.regulafacesdk_v2.data.gateway.impl
+package com.bungaedu.regulafacesdk_v2.data.gateway.impl.regula
 
 import android.app.Application
 import android.util.Log
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @property app [Application] utilizado para inicializar el SDK.
  */
-class FaceSdkManagerImpl(
+class RegulaSdkManagerImpl(
     private val app: Application
 ) : FaceSdkManager {
 

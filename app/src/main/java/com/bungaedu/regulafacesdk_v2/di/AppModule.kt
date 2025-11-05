@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import com.bungaedu.regulafacesdk_v2.data.gateway.MediaPicker
-import com.bungaedu.regulafacesdk_v2.data.gateway.impl.AndroidMediaPicker
+import com.bungaedu.regulafacesdk_v2.data.gateway.impl.common.AndroidMediaPicker
 import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityChecker
 import com.bungaedu.regulafacesdk_v2.domain.network.ConnectivityCheckerImpl
 import com.bungaedu.regulafacesdk_v2.ui.RecognizeViewModel

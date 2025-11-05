@@ -1,4 +1,4 @@
-package com.bungaedu.regulafacesdk_v2.data.gateway.impl
+package com.bungaedu.regulafacesdk_v2.data.gateway.impl.regula
 
 import android.content.Context
 import android.graphics.Bitmap
